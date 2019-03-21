@@ -9,7 +9,7 @@ import { ProductService } from './product.service';
 })
 export class ProductListComponent implements OnInit {
     pageTitle: string = 'Product List';
-    listFilter: string;
+    private _listFilter: string;
     showImage: boolean;
 
     imageWidth: number = 50;
@@ -43,4 +43,17 @@ export class ProductListComponent implements OnInit {
             this.filteredProducts = this.products;
         }
     }
+
+    get listFilter(): string {
+        return this._listFilter;
+    }
+    set listFilter(value: string) {
+        this._listFilter = value;
+        this.performFilter(value);
+    }
+
+    // onFilterChange(value: string): void {
+    //     this.listFilter = value;
+    //     this.performFilter(value);
+    // }
 }
