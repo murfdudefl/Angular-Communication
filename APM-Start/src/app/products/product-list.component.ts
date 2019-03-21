@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit, ElementRef, QueryList, ViewChildren } from '@angular/core';
 
 import { IProduct } from './product';
 import { ProductService } from './product.service';
+import { NgModel } from '@angular/forms';
 
 @Component({
     templateUrl: './product-list.component.html',
@@ -9,15 +10,14 @@ import { ProductService } from './product.service';
 })
 export class ProductListComponent implements OnInit {
     pageTitle: string = 'Product List';
-    private _listFilter: string;
     showImage: boolean;
-
     imageWidth: number = 50;
     imageMargin: number = 2;
     errorMessage: string;
 
     filteredProducts: IProduct[];
     products: IProduct[];
+    includeFilterDetail: boolean = false;
 
     constructor(private productService: ProductService) { }
 
@@ -25,7 +25,7 @@ export class ProductListComponent implements OnInit {
         this.productService.getProducts().subscribe(
             (products: IProduct[]) => {
                 this.products = products;
-                this.performFilter(this.listFilter);
+                this.performFilter();
             },
             (error: any) => this.errorMessage = <any>error
         );
@@ -44,13 +44,13 @@ export class ProductListComponent implements OnInit {
         }
     }
 
-    get listFilter(): string {
-        return this._listFilter;
-    }
-    set listFilter(value: string) {
-        this._listFilter = value;
-        this.performFilter(value);
-    }
+    // get listFilter(): string {
+    //     return this._listFilter;
+    // }
+    // set listFilter(value: string) {
+    //     this._listFilter = value;
+    //     this.performFilter(value);
+    // }
 
     // onFilterChange(value: string): void {
     //     this.listFilter = value;
