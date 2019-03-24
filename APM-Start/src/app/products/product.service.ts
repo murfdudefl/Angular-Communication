@@ -11,14 +11,23 @@ import { IProduct } from './product';
 
 @Injectable()
 export class ProductService {
+    private products: IProduct[];
     private productsUrl = 'api/products';
+    currentProduct: (IProduct | null);
 
     constructor(private http: HttpClient) { }
 
     getProducts(): Observable<IProduct[]> {
+        if(this.products) {
+            console.log('Returning prefetched product data');
+            return of(this.products);
+        }
         return this.http.get<IProduct[]>(this.productsUrl)
                         .pipe(
-                            tap(data => console.log(JSON.stringify(data))),
+                            tap(data => {
+                                console.log(JSON.stringify(data));
+                                this.products = data;
+                            }),
                             catchError(this.handleError)
                         );
     }
@@ -27,9 +36,16 @@ export class ProductService {
         if (id === 0) {
             return of(this.initializeProduct());
         }
+        if (this.products) {
+            const item = this.products.find(data => data.id === id);
+            if (item) {
+                console.log('Returning prefetched product');
+                return of(item);
+            }
+        }
         const url = `${this.productsUrl}/${id}`;
         return this.http.get<IProduct>(url)
-                        .pipe(
+            .pipe(
                             tap(data => console.log('Data: ' + JSON.stringify(data))),
                             catchError(this.handleError)
                         );
@@ -50,6 +66,15 @@ export class ProductService {
         return this.http.delete<IProduct>(url, { headers: headers} )
                         .pipe(
                             tap(data => console.log('deleteProduct: ' + id)),
+                            tap(data => {
+                                const itemIndex = this.products.findIndex(e => e.id === id);
+                                console.log(`Item index to be deleted: ${itemIndex}`);
+                                if (itemIndex) {
+                                    console.log('Deleted item found in local array');
+                                    this.products.splice(itemIndex, 1);
+                                    this.currentProduct = null;
+                                }
+                            }),
                             catchError(this.handleError)
                         );
     }
@@ -59,6 +84,10 @@ export class ProductService {
         return this.http.post<IProduct>(this.productsUrl, product,  { headers: headers} )
                         .pipe(
                             tap(data => console.log('createProduct: ' + JSON.stringify(data))),
+                            tap(data => {
+                                this.products.push(data);
+                                this.currentProduct = data;
+                            }),
                             catchError(this.handleError)
                         );
     }
