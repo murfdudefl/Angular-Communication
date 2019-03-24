@@ -11,6 +11,7 @@ import { ProductService } from './product.service';
 import { ProductEditGuard } from './edit/product-edit-guard.service';
 import { CriteriaComponent } from '../shared/criteria/criteria.component';
 import { StarComponent } from '../shared/star.component';
+import { ProductParameterService } from './product-parameter.service';
 
 @NgModule({
   imports: [
@@ -32,7 +33,8 @@ import { StarComponent } from '../shared/star.component';
   ],
    providers: [
     ProductService,
-    ProductEditGuard
+    ProductEditGuard,
+    ProductParameterService
   ]
 })
 export class ProductModule { }

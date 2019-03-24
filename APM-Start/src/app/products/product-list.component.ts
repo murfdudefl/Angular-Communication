@@ -4,6 +4,7 @@ import { IProduct } from './product';
 import { ProductService } from './product.service';
 import { NgModel } from '@angular/forms';
 import { CriteriaComponent } from '../shared/criteria/criteria.component';
+import { ProductParameterService } from './product-parameter.service';
 
 @Component({
     templateUrl: './product-list.component.html',
@@ -18,38 +19,62 @@ export class ProductListComponent implements OnInit, AfterViewInit {
     @ViewChild('filterCriteria') filterElementRef: CriteriaComponent;
     // @ViewChild(CriteriaComponent) filterElementRef: CriteriaComponent;
 
+    private _showImage: boolean;
+    private _listFilter: string;
+
     pageTitle: string = 'Product List';
-    showImage: boolean;
     imageWidth: number = 50;
     imageMargin: number = 2;
     errorMessage: string;
-    parentFilter: string;
 
     filteredProducts: IProduct[];
     products: IProduct[];
     includeFilterDetail: boolean = true;
 
-    constructor(private productService: ProductService) { }
+    constructor(
+        private productService: ProductService,
+        private productParameterService: ProductParameterService) { }
 
     ngOnInit(): void {
+        this._listFilter = this.productParameterService.filterBy;
+        this._showImage = this.productParameterService.showImage;
         this.productService.getProducts().subscribe(
             (products: IProduct[]) => {
                 this.products = products;
-                this.performFilter(this.parentFilter);
+                this.performFilter(this.listFilter);
             },
             (error: any) => this.errorMessage = <any>error
         );
     }
 
     ngAfterViewInit(): void {
-        this.parentFilter = this.filterElementRef.listFilter;
+        // this.listFilter = this.filterElementRef.listFilter;
+        this.filterElementRef.listFilter = this.listFilter;
     }
+
     toggleImage(): void {
         this.showImage = !this.showImage;
     }
 
+    get showImage(): boolean {
+        return this._showImage;
+    }
+    set showImage(value: boolean) {
+        this._showImage = value;
+        this.productParameterService.showImage = value;
+    }
+
+    get listFilter(): string {
+        return this._listFilter;
+    }
+    set listFilter(value: string) {
+        this._listFilter = value;
+        this.productParameterService.filterBy = value;
+        console.log(`List filter set to ${this.listFilter}`);
+    }
+
     filterChanged(filterValue: string) {
-        this.parentFilter = filterValue;
+        this.listFilter = filterValue;
         this.performFilter(filterValue);
         console.log(`Filter value changed to ${filterValue}`);
     }
