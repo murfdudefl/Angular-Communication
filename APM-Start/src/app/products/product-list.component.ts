@@ -48,6 +48,12 @@ export class ProductListComponent implements OnInit, AfterViewInit {
         this.showImage = !this.showImage;
     }
 
+    filterChanged(filterValue: string) {
+        this.parentFilter = filterValue;
+        this.performFilter(filterValue);
+        console.log(`Filter value changed to ${filterValue}`);
+    }
+
     performFilter(filterBy?: string): void {
         if (filterBy) {
             this.filteredProducts = this.products.filter((product: IProduct) =>

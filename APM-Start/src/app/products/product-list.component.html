@@ -8,8 +8,10 @@
         <div class="row">
             <label for="includeDetailSwitch">Include filter detail</label>
             <input id="includeDetailSwitch" type="checkbox" [(ngModel)]="includeFilterDetail">
-            <pm-criteria #filterCriteria class="col-md-10" [includeDetail]="includeFilterDetail" [hitCount]='filteredProducts?.length'></pm-criteria>
-            {{ parentFilter }}
+            <pm-criteria #filterCriteria class="col-md-10" 
+            [includeDetail]="includeFilterDetail" 
+            [hitCount]='filteredProducts?.length'
+            (filterValueChanged)='filterChanged($event)'></pm-criteria>
         </div>
         <div class='table-responsive'>
             <table class='table'

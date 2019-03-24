@@ -1,4 +1,5 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, Input, OnChanges, SimpleChange, SimpleChanges } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, EventEmitter } from '@angular/core';
+import { Input, OnChanges, SimpleChanges, Output } from '@angular/core';
 
 @Component({
   selector: 'pm-criteria',
@@ -7,11 +8,13 @@ import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, Input, OnChang
 })
 export class CriteriaComponent implements OnInit, AfterViewInit, OnChanges {
 
-  listFilter: string;
+  private _listFilter: string;
 
   @ViewChild('filterElement') filterElementRef: ElementRef;
   @Input() includeDetail: boolean;
   @Input() hitCount: number;
+  @Output() filterValueChanged: EventEmitter<string> = new EventEmitter<string>();
+
   hitMessage: string;
 
   constructor() { }
@@ -34,14 +37,20 @@ export class CriteriaComponent implements OnInit, AfterViewInit, OnChanges {
           this.hitMessage = `${this.hitCount} matches found`;
           break;
       }
-      if (this.hitCount === 0) {
-      } else {
-      }
     }
   }
 
   ngAfterViewInit(): void {
     this.filterElementRef.nativeElement.focus();
     console.log(`Include detail: ${this.includeDetail}`);
+  }
+
+  get listFilter(): string {
+    return this._listFilter;
+  }
+  set listFilter(value: string) {
+    console.log(`Child list filter changed to ${value}`);
+    this._listFilter = value;
+    this.filterValueChanged.emit(value);
   }
 }
