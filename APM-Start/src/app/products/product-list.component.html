@@ -6,7 +6,10 @@
     <div class='panel-body'>
         <!-- Filter by the Title   -->
         <div class="row">
-            <pm-criteria class="col-md-10" [includeDetail]="includeFilterDetail"></pm-criteria>
+            <label for="includeDetailSwitch">Include filter detail</label>
+            <input id="includeDetailSwitch" type="checkbox" [(ngModel)]="includeFilterDetail">
+            <pm-criteria #filterCriteria class="col-md-10" [includeDetail]="includeFilterDetail" [hitCount]='filteredProducts?.length'></pm-criteria>
+            {{ parentFilter }}
         </div>
         <div class='table-responsive'>
             <table class='table'
