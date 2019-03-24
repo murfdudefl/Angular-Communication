@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ProductService } from '../product.service';
 import { IProduct } from '../product';
+import { timer } from 'rxjs/observable/timer';
 
 @Component({
     selector: 'pm-product-shell-detail',
@@ -12,9 +13,12 @@ export class ProductShellDetailComponent implements OnInit {
     constructor(private productService: ProductService) { }
 
     ngOnInit() {
+        timer (0, 1000).subscribe(t => {
+            console.log(this.prod);
+        });
     }
 
-    get product(): IProduct | null {
+    get prod(): IProduct | null {
         return this.productService.currentProduct;
     }
 }
