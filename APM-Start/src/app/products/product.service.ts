@@ -8,14 +8,24 @@ import { of } from 'rxjs/observable/of';
 import { catchError, tap } from 'rxjs/operators';
 
 import { IProduct } from './product';
+import { isPromise } from 'q';
+import { Subject } from 'rxjs/Subject';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 @Injectable()
 export class ProductService {
     private products: IProduct[];
     private productsUrl = 'api/products';
-    currentProduct: (IProduct | null);
+    // currentProduct: (IProduct | null);
+
+    private selectedProductSource = new BehaviorSubject<IProduct | null>(null);
+    selectedProductChanges$ = this.selectedProductSource.asObservable();
 
     constructor(private http: HttpClient) { }
+
+    changeSelectedProduct(selectedProduct: (IProduct | null)): void {
+        this.selectedProductSource.next(selectedProduct);
+    }
 
     getProducts(): Observable<IProduct[]> {
         if(this.products) {
@@ -72,7 +82,7 @@ export class ProductService {
                                 if (itemIndex) {
                                     console.log('Deleted item found in local array');
                                     this.products.splice(itemIndex, 1);
-                                    this.currentProduct = null;
+                                    this.changeSelectedProduct(null);
                                 }
                             }),
                             catchError(this.handleError)
@@ -86,7 +96,7 @@ export class ProductService {
                             tap(data => console.log('createProduct: ' + JSON.stringify(data))),
                             tap(data => {
                                 this.products.push(data);
-                                this.currentProduct = data;
+                                this.changeSelectedProduct(data);
                             }),
                             catchError(this.handleError)
                         );
